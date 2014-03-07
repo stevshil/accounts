@@ -1,0 +1,15 @@
+# Remove this line once you have changed the values
+TURLROOT=/accounts
+TAPPHOME=/home/web-apps/accounts/html
+TCOMPANYNAME="Your Company Name"
+TUSERS="Whitespace list of users to use the app"
+TINTERESTRATE="Decimal interest rate charged for late payments"
+TCOMPANYADDRESS="Your address here"
+TCOMPANYDOMAIN="Your domain name after the www."
+TCOMPANYPHONE="Your phone number here"
+TCOMPANYREGNO="Your company registered number"
+TCOMPANYVATNO="Your company tax id for adding tax to rates"
+TDBUSER="Your mysql User for accounts app"
+TDBPASS="Your mysql Password for accounts app"
+TLOGO="location and name of your logo GIF file"
+TTITLE="location and name of your logo for printed invoice header GIF file"

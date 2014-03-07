@@ -1,0 +1,31 @@
+BODY {
+	background-color : #fffcbb
+}
+.header {
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	font-size : 14pt;
+	font-style : italic;
+	font-weight : 600;
+	color : #339900;
+}
+.smallhead {
+	font-family : Verdana, Arial;
+	font-size : 10pt;
+	font-style : normal;
+	font-weight : 400;
+}
+th {
+	font-family : Arial;
+	font-size: 10pt;
+	font-style : Italic;
+	font-weight : Bold;
+	color : #0000ff;
+}
+
+tr.bgcolor {
+	background-color : #33ddaa;
+}
+td {
+	font-family : Arial;
+	font-size: 10pt;
+}

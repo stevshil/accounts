@@ -1,0 +1,230 @@
+#!/usr/bin/perl
+
+sub roleback
+{
+	# Remove the directory for the app
+	system("rm -rf $configure{'TAPPHOME'}");
+	# Remove apache configuration
+	system("rm -f $configure{'TAPACHE'}");
+	if ( $_[0] == 2 )
+	{
+		# Remove Database and users
+		system("mysql --user=root --password=$rootpass mysql < remove.sql");
+	}
+}
+
+# Acquire root password to enable DB creation
+print "Enter root's passord for DB creation: ";
+system("stty -echo");
+$rootpass=<STDIN>;
+chomp $rootpass;
+system("stty echo");
+print "\n";
+
+# Check for apache
+$apache=`rpm -qa | grep '^httpd-[0-9]'`;
+if ( ! $apache )
+{
+	print STDERR "Please install Apache web server\n";
+	exit 1;
+}
+
+# Check for MySQL
+$mysql=`rpm -qa | grep '^mysql-server'`;
+if ( ! $mysql )
+{
+	print STDERR "Please install mysql\n";
+	exit 1;
+}
+
+# Create application directory
+
+if ( open(FH, "configure") )
+{
+	$line=<FH>;
+	if ( $line =~ /Remove this line/ )
+	{
+		print STDERR "Please edit the configure file with your details.\n";
+		print STDERR "Remove the top line in the file once you have done this.\n";
+		exit 2;
+}
+
+seek(FH,SEEK_SET,0);
+@configure=<FH>;
+for $x (@configure)
+{
+	chomp $x;
+	my @data=split /=/,$x;
+	$data[1]=~s/"//g;
+	chomp $data[1];
+	$configure{$data[0]}=$data[1]};
+}
+
+close FH;
+
+$thisdir=`pwd`;
+chomp $thisdir;
+if ( ! -d $configure{'TAPPHOME'} )
+{
+	$output=system("mkdir -p $configure{'TAPPHOME'}");
+	if ( $output != 0 )
+	{
+		print STDERR "Unable to create $configure{'TAPPHOME'}, $!\n";
+		exit 1;
+	}
+}
+
+# Unpack files
+chdir $configure{'TAPPHOME'};
+$tarfile="$thisdir/accounts.tgz";
+$output=system("tar xvf $tarfile");
+if ( $output != 0 )
+{
+	print STDERR "Unable to extract archive $tarfile, $!\n";
+	roleback(1);
+	exit 1;
+}
+
+if ( ! -d "$configure{'TAPPHOME'}/security" )
+{
+	mkdir "$configure{'TAPPHOME'}/security";
+}
+$output=system("chown -R $configure{'TDBUSER'} $configure{'TAPPHOME'} && touch security/allowed_users &&  chown apache security/allowed_users && chmod 600 security/allowed_users");
+if ( $output != 0 )
+{
+	roleback(1);
+	exit 2;
+}
+
+# Create Apache configuration file
+if ( ! open(FH, "$thisdir/accounts.conf") )
+{
+	print STDERR "No accounts.conf file, $!\n";
+	roleback(1);
+	exit 2;
+}
+@file=<FH>;
+close FH;
+
+for my $line (@file)
+{
+	$line=~s/TURLROOT/$configure{'TURLROOT'}/;
+	$line=~s/TAPPHOME/$configure{'TAPPHOME'}/;
+	$line=~s/TCOMPANYNAME/$configure{'TCOMPANYNAME'}/;
+	$line=~s/TUSERS/$configure{'TUSERS'}/;
+}
+
+if ( ! open(FH,">$configure{'TAPACHE'}") )
+{
+	print STDERR "Unable to write apache configuration to $configure{'TAPACHE'}\n";
+	roleback(1);
+	exit 3;
+}
+
+print FH "@file";
+close FH;
+
+# Create personalisation file for application
+chdir "$thisdir";
+open(FH, "personalise.pm") || die "No personalise.pm file";
+@file=<FH>;
+close FH;
+
+for my $line (@file)
+{
+	$line=~s/TCOMPANYNAME/$configure{'TCOMPANYNAME'}/;
+	$line=~s/TINTERESTRATE/$configure{'TINTERESTRATE'}/;
+	$line=~s/TCOMPANYADDRESS/$configure{'TCOMPANYADDRESS'}/;
+	$line=~s/TCOMPANYDOMAIN/$configure{'TCOMPANYDOMAIN'}/;
+	$line=~s/TCOMPANYPHONE/$configure{'TCOMPANYPHONE'}/;
+	$line=~s/TCOMPANYREGNO/$configure{'TCOMPANYREGNO'}/;
+	$line=~s/TCOMPANYVATNO/$configure{'TCOMPANYVATNO'}/;
+	$line=~s/TDBUSER/$configure{'TDBUSER'}/;
+	$line=~s/TDBPASS/$configure{'TDBPASS'}/;
+}
+
+if ( ! open(FH, ">$configure{'TAPPHOME'}/include/personalise.pm" ) )
+{
+	print STDERR "Unable to create $configure{'TAPPHOME'}/include/personalise.pm\n";
+	roleback(1);
+	exit 3;
+}
+
+print FH "@file";
+close FH;
+
+# Copy logos to images/tps2.gif and images/title.gif
+if ( ! open(FH, "$configure{'TLOGO'}") )
+{
+	print STDERR "Unable to locate logo file $configure{'TLOGO'}";
+	roleback(1);
+	exit 4;
+}
+open(OFH,">$configure{'TAPPHOME'}/images/tps2.gif") || die "Cannot open destination logo file";
+
+while (<FH>)
+{
+	print OFH;
+}
+close FH;
+close OFH;
+
+if ( ! open(FH, "$configure{'TTITLE'}") )
+{
+	print STDERR "Unable to locate logo file $configure{'TTITLE'}";
+	roleback(1);
+	exit 4;
+}
+open(OFH,">$configure{'TAPPHOME'}/images/title.gif") || die "Cannot open destination logo file for invoices";
+
+while (<FH>)
+{
+	print OFH;
+}
+close FH;
+close OFH;
+
+if ( ! open(FH, "create.sql") )
+{
+	print STDERR "Missing create.sql file\n";
+	roleback(1);
+	exit 1;
+}
+@file=<FH>;
+close FH;
+
+for my $line (@file)
+{
+	$line=~s/TDBUSER/$configure{'TDBUSER'}/;
+	$line=~s/TDBPASS/$configure{'TDBPASS'}/;
+}
+open(FH,">create.sql") || die "Cannot write back to create.sql";
+print FH "@file";
+close FH;
+
+# Now install database into mysql
+$output=system("mysql --user=root --password=$rootpass mysql < create.sql");
+if ( $output != 0 )
+{
+	print STDERR "Failed to create database, $!\n";
+	roleback(1);
+	exit 5;
+}
+$output=system("mysql --user=$configure{'TDBUSER'} --password=$configure{'TDBPASS'} accounts < setup.sql");
+if ( $output != 0 )
+{
+	print STDERR "Failed to create tables, $!\n";
+	roleback(2);
+	exit 5;
+}
+$output=system("mysql --user=$configure{'TDBUSER'} --password=$configure{'TDBPASS'} accounts < populate.sql");
+if ( $output != 0 )
+{
+	print STDERR "Failed to populate database, $!\n";
+	roleback(2);
+	exit 5;
+}
+
+print "Run htpasswd <USERNAME> to add users to the password list and set their password\n";
+print "Now reload your apache service to take on the changes\n";
+print "DONE.";

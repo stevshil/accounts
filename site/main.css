@@ -1,0 +1,106 @@
+.Navlink
+{
+	COLOR: #FF0000;
+	TEXT-DECORATION: none;
+	font-family: arial;
+	font-size: 8pt;
+	font-weight: bold
+}
+a:link.Navlink{
+	color : #FF0000;
+}
+a:visited.Navlink
+{
+	color : #FF0000
+}
+a:active.Navlink
+{
+	text-decoration: none
+}
+a:hover.Navlink
+{
+	text-decoration: none
+}
+a
+{
+	text-decoration:none;
+	color:#ff0000
+}
+a:link
+{
+	color:#ff0000;
+	text-decoration:none
+}
+a:visited
+{
+	color:#ffAA00;
+	text-decoration:none
+}
+a:active
+{
+	color:#a05555;
+	text-decoration:none
+}
+a:hover
+{
+	color:#0055ff;
+	text-decoration:none
+}
+BLOCKQUOTE
+{
+    MARGIN-LEFT: 10px
+}
+P
+{
+    FONT-SIZE: 8pt;
+    FONT-FAMILY: Verdana, Arial, sans-serif;
+}
+H1
+{
+    FONT-SIZE: 16pt;
+    COLOR: #ff0000;
+    FONT-FAMILY: "Mondine SF", Algerian, Roman, Times, sans-serif
+}
+H2
+{
+    FONT-SIZE: 12pt;
+    COLOR: green;
+    FONT-STYLE: oblique;
+    FONT-FAMILY: Arial, sans-serif, serif;
+}
+H3
+{
+    FONT-WEIGHT: 800;
+    FONT-SIZE: 10pt;
+    COLOR: #0000ff;
+    FONT-STYLE: italic;
+    FONT-FAMILY: Verdana, Arial, sans-serif, serif
+}
+H4
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: small;
+    COLOR: purple;
+    FONT-STYLE: italic
+}
+HR
+{
+    COLOR: blue;
+    HEIGHT: 1px
+}
+.plain
+{
+    FONT-SIZE: 8pt
+}
+.special
+{
+    FONT-WEIGHT: normal;
+    FONT-SIZE: 10pt;
+    COLOR: navy;
+    FONT-STYLE: italic;
+    FONT-FAMILY: serif, Arial, Verdana, sans-serif
+}
+.menu
+{
+    BACKGROUND-COLOR: #FFFF66
+}

@@ -1,0 +1,16 @@
+# Remove this line once you have changed the values
+TURLROOT=/accounts
+TAPPHOME=/home/web-apps/accounts/html
+TCOMPANYNAME="TPS Services Ltd"
+TUSERS="steve john mack"
+TINTERESTRATE="1.5"
+TCOMPANYADDRESS="TPS Services Ltd, &nbsp; Road Name, &nbsp; Town, County, &nbsp; ZipCode"
+TCOMPANYDOMAIN="example.com"
+TCOMPANYPHONE="+441234567890"
+TCOMPANYREGNO="1234567"
+TCOMPANYVATNO="123456789"
+TDBUSER="mydbuser"
+TDBPASS="mydbpassword"
+TAPACHE="/etc/httpd/conf.d/accounts.conf"
+TLOGO="/home/example/Pictures/mylogo.gif"
+TTITLE="/home/example/Pictures/mytitle.gif"
