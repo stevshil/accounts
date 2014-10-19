@@ -58,7 +58,7 @@ undef $ref;
 
 # Get each invoice and their customer
 # We need Customer Name, Invoice.InvoiceDay/Month/Year, PaymentTerms PaymentTerms(ID), Payments.PaymentDay/Month/Year
-$sth=$dbh->prepare("SELECT CompanyName, Invoice.InvoiceNo, InvoiceDay, InvoiceMonth, InvoiceYear, PaymentDay, PaymentMonth, PaymentYear, Left(PaymentTerms,2) PaymentTermsDays, PaymentTerms, NetAmtUKP From CustomerDetails,Invoice,Payments,PaymentTerms, InvoiceDetails WHERE CustomerDetails.CoID=Invoice.CoID AND CustomerDetails.PaymentTermsID=PaymentTerms.PaymentTermsID AND Invoice.InvoiceNo=Payments.InvoiceNo AND Invoice.InvoiceNo=InvoiceDetails.InvoiceNo AND Invoice.void is null");
+$sth=$dbh->prepare("SELECT CompanyName, Invoice.InvoiceNo, InvoiceDay, InvoiceMonth, InvoiceYear, PaymentDay, PaymentMonth, PaymentYear, Left(PaymentTerms,2) PaymentTermsDays, PaymentTerms, NetAmtUKP, Quantity From CustomerDetails,Invoice,Payments,PaymentTerms, InvoiceDetails WHERE CustomerDetails.CoID=Invoice.CoID AND CustomerDetails.PaymentTermsID=PaymentTerms.PaymentTermsID AND Invoice.InvoiceNo=Payments.InvoiceNo AND Invoice.InvoiceNo=InvoiceDetails.InvoiceNo AND Invoice.void is null");
 #Group By CompanyName");
 $sth->execute();
 
@@ -107,7 +107,7 @@ while ( my $ref=$sth->fetchrow_hashref() )
 	}
 	$numInvoices=$refInvCount{$ref->{CompanyName}};
 	my $totaldays=$customerHash{$ref->{CompanyName}}[6]+$curDays;
-	my $totalIncome=$customerHash{$ref->{CompanyName}}[7]+$ref->{NetAmtUKP};
+	my $totalIncome=$customerHash{$ref->{CompanyName}}[7]+($ref->{NetAmtUKP}*$ref->{Quantity});
 
 	$customerHash{"$ref->{CompanyName}"}=[$mindays,$maxdays,$numLate,$numInvoices,$ref->{PaymentTerms},$ref->{PaymentTermsDays},$totaldays,$totalIncome];
 }
@@ -129,8 +129,9 @@ foreach $key (sort byPct (keys %sortHash))
 {
 	my $rowcolour="bgcolor='$bgcolour'" if ( ($rowcount % 2) != 0 );
 	print <<"__END__";
-<tr $rowcolour><td align=left>$key</td><td align=left>$sortHash{$key}[1]</td><td align=right>$sortHash{$key}[2]</td><td align=right>$sortHash{$key}[3]</td><td align=right>$sortHash{$key}[4]</td><td align=right>$sortHash{$key}[5]</td><td align=right>$sortHash{$key}[6]</td><td align=right>$sortHash{$key}[7]</td></tr>
+<tr $rowcolour><td align=left>$key</td><td align=left>$sortHash{$key}[1]</td><td align=right>$sortHash{$key}[2]</td><td align=right>$sortHash{$key}[3]</td><td align=right>$sortHash{$key}[4]</td><td align=right>$sortHash{$key}[5]</td><td align=right>$sortHash{$key}[6]</td><td align=right>
 __END__
+printf("%.2f</td></tr>",$sortHash{$key}[7]);
 	$rowcount++;
 }
 
