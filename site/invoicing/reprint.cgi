@@ -150,13 +150,20 @@ if ( "$refCustomer->{CurrencyType}" ne "GBP" )
 	$sth->finish();
 }
 
-$sth=$dbh->prepare("SELECT PaymentTerms FROM PaymentTerms WHERE PaymentTermsID = $refCustomer->{PaymentTermsID}");
+# The next line was the old payment terms in days
+#$sth=$dbh->prepare("SELECT PaymentTerms FROM PaymentTerms WHERE PaymentTermsID = $refCustomer->{PaymentTermsID}");
+# Now we are specifying the actual pay by date;
+$sth=$dbh->prepare("select DATE_ADD(date(concat_ws('-',InvoiceYear,InvoiceMonth,InvoiceDay)), INTERVAL cast(substr(PaymentTerms.PaymentTerms,1,2) as unsigned) DAY) As PaymentTerms FROM Invoice,PaymentTerms,CustomerDetails WHERE InvoiceNo=$InvoiceNo AND Invoice.CoID=CustomerDetails.CoID AND CustomerDetails.PaymentTermsID=PaymentTerms.PaymentTermsID;");
 $sth->execute();
 $ref=$sth->fetchrow_hashref();
+my %months=('01' => 'January', '02' => 'February', '03' => 'March', '04' => 'April', '05' => 'May', '06' => 'June', '07' => 'July', '08' => 'August', '09' => 'September', 10 => 'October', 11 => 'November', 12 => 'December');
+# DB presents us with yyyy-mm-dd
+my $PayDate=substr($ref->{PaymentTerms},8,2).' '.$months{substr($ref->{PaymentTerms},5,2)}.' '.substr($ref->{PaymentTerms},0,4);
+$PayDate=~s/^0//;
 
 print <<"__END__";
 <tr><td colspan=2>&nbsp;</td></tr>
-<tr><td colspan=2 align=center>Please make cheque(s) payable to $COMPANYNAME at the address below.<br>Payment requested within $ref->{PaymentTerms} of Invoice Date.<br>Any payments received after this time are subject to $INTERESTRATE% interest per day unpaid.<br>Days includes weekends and bank holidays<br></td></tr>
+<tr><td colspan=2 align=center><b><font style='font-size: 16pt'>Payment to be received no later than $PayDate.</font></b><br>Any payments received after this time are subject to $INTERESTRATE% interest per day unpaid.<br>Days includes weekends and bank holidays.<br>Please make cheque(s) payable to $COMPANYNAME at the address below.<br></td></tr>
 <tr><td colspan=2 align=center>&nbsp;<br>
 $COMPANYNAME<br>
 $COMPANYADDRESS<br>
