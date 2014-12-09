@@ -43,7 +43,11 @@ print "<table><tr><td>&nbsp;</td><td>Month</td><td>Year</td><td>&nbsp;</td><td>M
 print "<option value=0>0</option>";
 for my $counter (1..12)
 {
-	print "<option value=$counter>$counter</option>";
+	if ( $counter == $sMonth ) {
+		print "<option value=$counter selected>$counter</option>";
+	} else {
+		print "<option value=$counter>$counter</option>";
+	}
 }
 print "</select></td><td><select name='sYear'>";
 my $tmpdbh = DBI->connect("DBI:mysql:database=accounts;host=localhost","$DBUSER","$DBPASS") || die "Unable to connect to database";
@@ -57,19 +61,31 @@ undef $tmpdbh;
 my $maxYear=(((localtime())[5])+1900);
 for my $counter ( $lowYear->{'MinYear'} .. $maxYear )
 {
-	print "<option value=$counter>$counter</option>";
+	if ( $counter == $sYear ) {
+		print "<option value=$counter selected>$counter</option>";
+	} else {
+		print "<option value=$counter>$counter</option>";
+	}
 }
 print "</select></td>";
 print "<td>End:</td><td><select name='eMonth'>";
 print "<option value=0>0</option>";
 for my $counter (1..12)
 {
-	print "<option value=$counter>$counter</option>";
+	if ( $counter == $eMonth ) {
+		print "<option value=$counter selected>$counter</option>";
+	} else {
+		print "<option value=$counter>$counter</option>";
+	}
 }
 print "</select></td><td><select name='eYear'>";
 for my $counter ( $lowYear->{'MinYear'} .. $maxYear )
 {
-	print "<option value=$counter>$counter</option>";
+	if ( $counter == $eYear ) {
+		print "<option value=$counter selected>$counter</option>";
+	} else {
+		print "<option value=$counter>$counter</option>";
+	}
 }
 print "</select></td><td><input type=button name=filterbtn value=Filter onClick='filterit(document.filter.sMonth.value,document.filter.sYear.value,document.filter.eMonth.value,document.filter.eYear.value)'></table></form>";
 
@@ -99,7 +115,8 @@ if ( $sMonth > 0 )
 }
 else
 {
-	$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null");
+	#$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null AND InvoiceYear = YEAR(now())");
+	$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null AND DATE(CONCAT(InvoiceYear,'-',InvoiceMonth,'-','1')) BETWEEN DATE(DATE_SUB(CURDATE(),INTERVAL 18 MONTH)) AND CURDATE()");
 }
 $sth->execute();
 
