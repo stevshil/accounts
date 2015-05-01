@@ -11,6 +11,8 @@ my $bgcolour="#f3f0f9";
 my $DoWhat=param("DoWhat");
 my $InvoiceNo = param("id");
 
+my $numMonths=param("numMonths");
+
 print header();
 
 print <<"__END__";
@@ -19,6 +21,11 @@ print <<"__END__";
 <title>$COMPANYNAME, Accounting System for Invoicing, Printing</title>
 <link rel="stylesheet" href="../main.css" type="text/css">
 <link rel="stylesheet" href="../style.css" type="text/css">
+<script language='javascript'>
+function filterme() {
+	location.href='print.cgi?numMonths='+document.list.numMonths.value;
+}
+</script>
 __END__
 
 sub ListInvoices
@@ -32,6 +39,9 @@ sub ListInvoices
 	print <<"__END__";
 	<td align=left valign=top><h1>Print Invoices </h1>
 	<p>Click on the ID column number to view an Invoice.<br>Tick the box next to the Invoice if you wish to print it.<br>Click <b>reprint</b> to print a posted invoice.<br><br>
+	<form name=list action=print.cgi method=get>
+	<p>How many months back to show (-1 = All, or type number): <input type=text name=numMonths size=5><input type=button onClick='filterme()' value='Filter'></p>
+	</form>
 	<form name=print action=print.cgi method=post>
 	<input type=hidden name=DoWhat value=Print>
 	<table width="100%" border=0 cellspacing=0 cellpadding=0>
@@ -39,7 +49,15 @@ sub ListInvoices
 __END__
 
 	my $dbh = DBI->connect("DBI:mysql:database=accounts;host=localhost","$DBUSER","$DBPASS") || die "Unable to connect to database";
-	my $sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null");
+
+my $sth;
+if ( $numMonths == 0 ) {
+	$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null AND date(concat(PrintedYear,'-',PrintedMonth,'-',1)) > date_sub(NOW(),INTERVAL 3 MONTH)");
+} elsif ( $numMonths == -1 ) {
+	$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null");
+} else {
+	$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null AND date(concat(PrintedYear,'-',PrintedMonth,'-',1)) > date_sub(NOW(),INTERVAL $numMonths MONTH)");
+}
 	$sth->execute();
 
 
