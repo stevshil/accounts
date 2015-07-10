@@ -52,11 +52,11 @@ __END__
 
 my $sth;
 if ( $numMonths == 0 ) {
-	$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null AND date(concat(PrintedYear,'-',PrintedMonth,'-',1)) > date_sub(NOW(),INTERVAL 3 MONTH)");
+	$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null AND date(concat(PrintedYear,'-',PrintedMonth,'-',DAY(NOW()))) > date_sub(NOW(),INTERVAL 3 MONTH)");
 } elsif ( $numMonths == -1 ) {
 	$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null");
 } else {
-	$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null AND date(concat(PrintedYear,'-',PrintedMonth,'-',1)) > date_sub(NOW(),INTERVAL $numMonths MONTH)");
+	$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null AND date(concat(PrintedYear,'-',PrintedMonth,'-',DAY(NOW()))) > date_sub(NOW(),INTERVAL $numMonths MONTH)");
 }
 	$sth->execute();
 
