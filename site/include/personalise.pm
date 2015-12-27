@@ -2,7 +2,7 @@ package personalise;
 
 use base 'Exporter';
 
-our @EXPORT = qw(doPersonalise $COMPANYNAME $INTERESTRATE $COMPANYADDRESS $COMPANYDOMAIN $COMPANYPHONE $COMPANYREGNO $COMPANYVATNO $DBUSER $DBPASS);
+our @EXPORT = qw(doPersonalise $COMPANYNAME $INTERESTRATE $COMPANYADDRESS $COMPANYDOMAIN $COMPANYPHONE $COMPANYREGNO $COMPANYVATNO $DBUSER $DBPASS $BANKNAME $SORTCODE $ACCNUM $IBAN);
 
 our $COMPANYNAME="TPS Services Ltd";
 our $INTERESTRATE="1.5";
@@ -13,6 +13,10 @@ our $COMPANYREGNO="yourCoNo";
 our $COMPANYVATNO="yourVATNO";
 our $DBUSER="yourDBuser";
 our $DBPASS="yourDBpassword";
+our $BANKNAME="yourBankingCompanyName";
+our $SORTCODE="yourBankSortCode";
+our $ACCNUM="yourBankAccountNumber";
+our $IBAN="InternationalBankingNumber";
 
 sub doPersonalise
 {

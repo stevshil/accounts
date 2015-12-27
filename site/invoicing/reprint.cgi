@@ -163,7 +163,15 @@ $PayDate=~s/^0//;
 
 print <<"__END__";
 <tr><td colspan=2>&nbsp;</td></tr>
-<tr><td colspan=2 align=center><b><font style='font-size: 16pt'>Payment to be received no later than $PayDate.</font></b><br>Any payments received after this time are subject to $INTERESTRATE% interest per day unpaid.<br>Days includes weekends and bank holidays.<br>Please make cheque(s) payable to $COMPANYNAME at the address below.<br></td></tr>
+<tr><td colspan=2 align=center><b><font style='font-size: 16pt'>Payment to be received no later than $PayDate.</font></b><br>Any payments received after this time are subject to $INTERESTRATE% interest per day unpaid.<br>Days includes weekends and bank holidays.<br>Please make cheque(s) payable to $COMPANYNAME at the address  at the bottom of the page, or bank transfers to;<br><br>
+<table align=left>
+<tr><td>Account Name:</td><td>$COMPANYNAME</td></tr>
+<tr><td>Bank Name:</td><td>$BANKNAME</td></tr>
+<tr><td>Sort Code:</td><td>$SORTCODE</td></tr>
+<tr><td>Account Number:</td><td>$ACCNUM</td></tr>
+<tr><td>IBAN:</td><td>$IBAN</td></tr>
+</table>
+<br></td></tr>
 <tr><td colspan=2 align=center>&nbsp;<br>
 $COMPANYNAME<br>
 $COMPANYADDRESS<br>
