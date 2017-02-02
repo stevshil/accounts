@@ -106,7 +106,8 @@ if ( $sMonth > 0 )
 	}
 	elsif ( $eYear >= $sYear )
 	{
-		$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null AND datediff(concat(InvoiceYear,'-',InvoiceMonth,'-',1),'$sYear-$sMonth-1') > 0 datediff(concat(InvoiceYear,'-',InvoiceMonth,'-',1),'$eYear-$eMonth-1') > 0");
+		#$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null AND datediff(concat(InvoiceYear,'-',InvoiceMonth,'-',1),'$sYear-$sMonth-1') > 0 AND datediff(concat(InvoiceYear,'-',InvoiceMonth,'-',1),'$eYear-$eMonth-1') > 0");
+		$sth = $dbh->prepare("SELECT InvoiceNo, Invoice.CoID, CompanyName, InvoiceDay, InvoiceMonth, InvoiceYear, PrintedDay, PrintedMonth, PrintedYear, Posted FROM Invoice,CustomerDetails WHERE Invoice.CoID=CustomerDetails.CoID AND Invoice.void is null AND str_to_date(concat(InvoiceYear,'-',InvoiceMonth,'-',InvoiceDay),'%Y-%m-%d') BETWEEN str_to_date('$sYear-$sMonth-1','%Y-%m-%d') AND str_to_date('$eYear-$eMonth-1','%Y-%m-%d')");
 	}
 	else
 	{
