@@ -112,7 +112,9 @@ while ( my $ref = $sthDetails->fetchrow_hashref() )
 {
 	my $descr = $ref->{Description};
 	$descr =~ s/\n/<br>/g;
-	print "<tr><td bgcolor=#000000></td><td width=250>$descr&nbsp;</td><td align=right width=20>$ref->{Quantity}&nbsp;</td><td align=right width=100>$ref->{NetAmtUKP}&nbsp;</td><td align=right width=100>$ref->{UKPTotal}&nbsp;</td><td bgcolor=#000000></td>";
+	print "<tr><td bgcolor=#000000></td><td width=250>$descr&nbsp;</td><td align=right width=20>$ref->{Quantity}&nbsp;</td><td align=right width=100>$ref->{NetAmtUKP}&nbsp;</td><td align=right width=100>";
+	printf("%10.2f",$ref->{UKPTotal});
+	print "&nbsp;</td><td bgcolor=#000000></td>";
 	print "<td align=right width=100>$ref->{AltCurrencyValue}&nbsp;</td><td align=right width=100>$ref->{AltTotal}&nbsp;</td><td bgcolor=#000000></td>" if ( "$refCustomer->{CurrencyType}" ne "GBP" );
 	print "</tr>\n";
 	$VATRate=$ref->{VATRate};
@@ -128,16 +130,16 @@ DrawLine("$refCustomer->{CurrencyType}");
 DrawLine2($refCustomer->{CurrencyType});
 
 # Net Totals
-print "<tr><td bgcolor=#000000></td><td colspan=3 align=right>Total before tax:</td><td align=right>$ref->{UKPTotals}&nbsp;</td><td bgcolor=#000000></td>";
-print "<td></td><td align=right>$ref->{AltTotals}&nbsp;</td><td bgcolor=#000000></td>" if ( "$refCustomer->{CurrencyType}" ne "GBP" );
+printf("<tr><td bgcolor=#000000></td><td colspan=3 align=right>Total before tax:</td><td align=right>%10.2f&nbsp;</td><td bgcolor=#000000></td>",$ref->{UKPTotals});
+printf("<td></td><td align=right>%10.2f&nbsp;</td><td bgcolor=#000000></td>",$ref->{AltTotals}) if ( "$refCustomer->{CurrencyType}" ne "GBP" );
 
 # Tax Amount
-print "<tr><td bgcolor=#000000></td><td colspan=3 align=right>VAT:</td><td align=right>$ref->{UKVAT}&nbsp;</td><td bgcolor=#000000></td>";
-print "<td></td><td align=right>$ref->{AltVAT}&nbsp;</td><td bgcolor=#000000></td>" if ( "$refCustomer->{CurrencyType}" ne "GBP" );
+printf("<tr><td bgcolor=#000000></td><td colspan=3 align=right>VAT:</td><td align=right>%10.2f&nbsp;</td><td bgcolor=#000000></td>",$ref->{UKVAT});
+printf("<td></td><td align=right>%10.2f&nbsp;</td><td bgcolor=#000000></td>",$ref->{AltVAT}) if ( "$refCustomer->{CurrencyType}" ne "GBP" );
 
 # Taxed Totals
-print "<tr><td bgcolor=#000000></td><td colspan=3 align=right><b>Gross Total:</b></td><td align=right><b>$ref->{GrossUKPTotals}&nbsp;</b></td><td bgcolor=#000000></td>";
-print "<td></td><td align=right><b>$ref->{AltGrossTotals}&nbsp;</b></td><td bgcolor=#000000></td>" if ( "$refCustomer->{CurrencyType}" ne "GBP" );
+printf("<tr><td bgcolor=#000000></td><td colspan=3 align=right><b>Gross Total:</b></td><td align=right><b>%10.2f&nbsp;</b></td><td bgcolor=#000000></td>",$ref->{GrossUKPTotals});
+printf("<td></td><td align=right><b>%10.2f&nbsp;</b></td><td bgcolor=#000000></td>",$ref->{AltGrossTotals}) if ( "$refCustomer->{CurrencyType}" ne "GBP" );
 
 DrawLine("$refCustomer->{CurrencyType}");
 print "</tr>\n";
